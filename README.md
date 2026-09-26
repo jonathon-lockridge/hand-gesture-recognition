@@ -39,3 +39,17 @@ Held-out test accuracy is ~100%, but that number is inflated: test frames come f
 Live, all five gestures classify reliably at normal angles. The main failure case was pointing directly at the camera, where the index finger foreshortens and the landmarks resemble a fist. Recording ~200 additional point samples at those angles fixed it. Extreme tilts can still misclassify briefly.
 
 ## Project structure
+
+```
+hand_utils.py      MediaPipe setup, landmark normalization, skeleton drawing
+collect_data.py    webcam data collection → data/gestures.csv
+model.py           GestureNet architecture
+train.py           training + evaluation → models/gesture_model.pt
+predict.py         live webcam inference
+```
+
+## Next steps
+
+- Gesture-controlled drawing: point to draw, fist to clear, palm to change color
+- More gestures and two-hand support
+- Temporal smoothing to stop single-frame flickers
