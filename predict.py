@@ -6,7 +6,7 @@ from model import GestureNet
 MODEL_PATH = "models/gesture_model.pt"
 
 # ---- load the trained model ----
-checkpoint = torch.load(MODEL_PATH)
+checkpoint = torch.load(MODEL_PATH, map_location="cpu")
 classes = checkpoint["classes"]
 model = GestureNet(n_features=checkpoint["n_features"], n_classes=len(classes))
 model.load_state_dict(checkpoint["state_dict"])

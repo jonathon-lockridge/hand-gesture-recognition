@@ -23,6 +23,16 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y
 )
 
+# ---- mirror augmentation ----
+# Flipping x turns a right hand into a left hand. Features are wrist-centered
+# and scale-normalized, so negating x is all it takes. Only the training set is
+# augmented so the test set stays untouched.
+X_mirror = X_train.copy()
+X_mirror[:, 0::3] *= -1                                           # every x coord
+X_train = np.concatenate([X_train, X_mirror])
+y_train = np.concatenate([y_train, y_train])
+print(f"{len(X_train)} training samples after mirror augmentation")
+
 # ---- move to device ----
 device = "mps" if torch.backends.mps.is_available() else "cpu"
 print(f"training on {device}")
