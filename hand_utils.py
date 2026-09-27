@@ -7,15 +7,15 @@ from mediapipe.tasks.python import vision
 
 MODEL_PATH = "models/hand_landmarker.task"
 
-# which landmark indices connect to which, for drawing the skeleton
-CONNECTIONS = [
-    (0, 1), (1, 2), (2, 3), (3, 4),            # thumb
-    (0, 5), (5, 6), (6, 7), (7, 8),            # index
-    (0, 9), (9, 10), (10, 11), (11, 12),       # middle
-    (0, 13), (13, 14), (14, 15), (15, 16),     # ring
-    (0, 17), (17, 18), (18, 19), (19, 20),     # pinky
-    (5, 9), (9, 13), (13, 17),                 # across the palm
-]
+# which landmark indices connect to which, grouped by finger, with a BGR color each
+FINGERS = {
+    "thumb":  ([(0, 1), (1, 2), (2, 3), (3, 4)],         (0, 200, 255)),   # orange
+    "index":  ([(0, 5), (5, 6), (6, 7), (7, 8)],         (0, 255, 0)),     # green
+    "middle": ([(0, 9), (9, 10), (10, 11), (11, 12)],    (255, 200, 0)),   # cyan
+    "ring":   ([(0, 13), (13, 14), (14, 15), (15, 16)],  (255, 0, 200)),   # purple
+    "pinky":  ([(0, 17), (17, 18), (18, 19), (19, 20)],  (0, 100, 255)),   # red-orange
+    "palm":   ([(5, 9), (9, 13), (13, 17)],              (200, 200, 200)), # gray
+}
 
 
 def create_landmarker():
@@ -50,7 +50,9 @@ def to_feature_vector(landmarks):
 def draw_hand(frame, landmarks):
     h, w = frame.shape[:2]
     pts = [(int(lm.x * w), int(lm.y * h)) for lm in landmarks]
-    for a, b in CONNECTIONS:
-        cv2.line(frame, pts[a], pts[b], (0, 255, 0), 2)
+    for connections, color in FINGERS.values():
+        for a, b in connections:
+            cv2.line(frame, pts[a], pts[b], color, 2, cv2.LINE_AA)
     for p in pts:
-        cv2.circle(frame, p, 4, (0, 0, 255), -1)
+        cv2.circle(frame, p, 5, (40, 40, 40), -1, cv2.LINE_AA)     # dark outline
+        cv2.circle(frame, p, 3, (255, 255, 255), -1, cv2.LINE_AA)  # white joint

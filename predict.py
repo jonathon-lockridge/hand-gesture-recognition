@@ -19,6 +19,13 @@ landmarker = create_landmarker()
 cap = cv2.VideoCapture(0)
 history = deque(maxlen=WINDOW)     # rolling window of recent probability vectors
 
+def draw_label(frame, text, color):
+    """Text with a dark outline so it's readable over any background."""
+    pos = (12, 44)
+    font = cv2.FONT_HERSHEY_DUPLEX
+    cv2.putText(frame, text, pos, font, 1.3, (0, 0, 0), 5, cv2.LINE_AA)   # outline
+    cv2.putText(frame, text, pos, font, 1.3, color, 2, cv2.LINE_AA)       # fill
+
 while True:
     ok, frame = cap.read()
     if not ok:
@@ -39,12 +46,11 @@ while True:
 
         if conf >= THRESHOLD:
             text = f"{classes[idx]}  {conf.item() * 100:.0f}%"
-            color = (0, 255, 0)
+            color = (255, 160, 0)     # electric blue (BGR)
         else:
             text = "..."
             color = (0, 200, 255)
-        cv2.putText(frame, text, (10, 40),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1.2, color, 3)
+        draw_label(frame, text, color)
     else:
         history.clear()                # hand left the frame, forget old predictions
 
