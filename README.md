@@ -8,7 +8,8 @@ Real-time hand gesture classification from a webcam. MediaPipe extracts 21 hand 
 
 1. **Landmark extraction.** MediaPipe's Hand Landmarker finds 21 (x, y, z) points on the hand in every frame.
 2. **Normalization.** Landmarks are re-centered on the wrist and scaled by hand size, so the model learns hand _shape_ and ignores where the hand is on screen or how far away it is.
-3. **Classification.** The 63 normalized values feed a fully-connected network (63 → 128 → 64 → 5) trained with cross-entropy loss on ~2,600 samples I collected myself.
+3. **Classification.** The 63 normalized values feed a fully-connected network (63 → 128 → 64 → 5) trained with cross-entropy loss on ~3,100 samples I collected myself. Training data is mirror-augmented (x coordinates flipped) so the model works for both left and right hands from right-hand-only recordings.
+4. **Smoothing.** Instead of trusting a single frame, the live predictor averages softmax probabilities over the last 8 frames and only shows a label when the smoothed confidence is above 70%. This removes single-frame flickers and shows "..." while a gesture is still forming.
 
 Working from landmarks instead of raw pixels means the classifier is tiny, trains in seconds on a laptop, and runs in real time on CPU.
 
@@ -51,5 +52,5 @@ predict.py         live webcam inference
 ## Next steps
 
 - Gesture-controlled drawing: point to draw, fist to clear, palm to change color
-- More gestures and two-hand support
-- Temporal smoothing to stop single-frame flickers
+- Dynamic gestures (swipe, wave) with a sequence model over landmark windows
+- Session-based train/test split for an honest accuracy number

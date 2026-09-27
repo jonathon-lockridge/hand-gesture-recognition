@@ -21,10 +21,11 @@ history = deque(maxlen=WINDOW)     # rolling window of recent probability vector
 
 def draw_label(frame, text, color):
     """Text with a dark outline so it's readable over any background."""
-    pos = (12, 44)
+    k = frame.shape[0] / 480                      # scale everything with frame height
+    pos = (int(16 * k), int(52 * k))
     font = cv2.FONT_HERSHEY_DUPLEX
-    cv2.putText(frame, text, pos, font, 1.3, (0, 0, 0), 5, cv2.LINE_AA)   # outline
-    cv2.putText(frame, text, pos, font, 1.3, color, 2, cv2.LINE_AA)       # fill
+    cv2.putText(frame, text, pos, font, 1.4 * k, (0, 0, 0), int(6 * k), cv2.LINE_AA)   # outline
+    cv2.putText(frame, text, pos, font, 1.4 * k, color, int(2 * k), cv2.LINE_AA)       # fill
 
 while True:
     ok, frame = cap.read()

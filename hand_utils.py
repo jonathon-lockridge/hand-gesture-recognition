@@ -49,10 +49,11 @@ def to_feature_vector(landmarks):
 
 def draw_hand(frame, landmarks):
     h, w = frame.shape[:2]
+    k = h / 480                                    # scale thickness with frame size
     pts = [(int(lm.x * w), int(lm.y * h)) for lm in landmarks]
     for connections, color in FINGERS.values():
         for a, b in connections:
-            cv2.line(frame, pts[a], pts[b], color, 2, cv2.LINE_AA)
+            cv2.line(frame, pts[a], pts[b], color, int(3 * k), cv2.LINE_AA)
     for p in pts:
-        cv2.circle(frame, p, 5, (40, 40, 40), -1, cv2.LINE_AA)     # dark outline
-        cv2.circle(frame, p, 3, (255, 255, 255), -1, cv2.LINE_AA)  # white joint
+        cv2.circle(frame, p, int(6 * k), (40, 40, 40), -1, cv2.LINE_AA)     # dark outline
+        cv2.circle(frame, p, int(4 * k), (255, 255, 255), -1, cv2.LINE_AA)  # white joint
