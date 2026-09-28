@@ -1,8 +1,8 @@
-from collections import deque
 import cv2
 import torch
 from hand_utils import create_landmarker, detect, to_feature_vector, draw_hand
 from model import GestureNet
+from smoothing import GestureSmoother
 
 MODEL_PATH = "models/gesture_model.pt"
 WINDOW = 8            # frames to average over
@@ -17,7 +17,7 @@ model.eval()
 
 landmarker = create_landmarker()
 cap = cv2.VideoCapture(0)
-history = deque(maxlen=WINDOW)     # rolling window of recent probability vectors
+smoother = GestureSmoother(window=WINDOW, threshold=THRESHOLD)
 
 def draw_label(frame, text, color):
     """Text with a dark outline so it's readable over any background."""
@@ -39,21 +39,17 @@ while True:
         features = torch.tensor(to_feature_vector(landmarks)).unsqueeze(0)
         with torch.no_grad():
             probs = torch.softmax(model(features), dim=1)[0]
-        history.append(probs)
+        idx, conf = smoother.update(probs)
 
-        # average the last WINDOW frames instead of trusting this one frame
-        smoothed = torch.stack(list(history)).mean(0)
-        conf, idx = smoothed.max(0)
-
-        if conf >= THRESHOLD:
-            text = f"{classes[idx]}  {conf.item() * 100:.0f}%"
+        if idx is not None:
+            text = f"{classes[idx]}  {conf * 100:.0f}%"
             color = (255, 160, 0)     # electric blue (BGR)
         else:
             text = "..."
             color = (0, 200, 255)
         draw_label(frame, text, color)
     else:
-        history.clear()                # hand left the frame, forget old predictions
+        smoother.reset()               # hand left the frame, forget old predictions
 
     cv2.imshow("gesture", frame)
     if cv2.waitKey(1) & 0xFF == ord("q"):
