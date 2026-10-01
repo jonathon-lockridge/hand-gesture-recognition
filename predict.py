@@ -1,6 +1,6 @@
 import cv2
 import torch
-from hand_utils import create_landmarker, detect, to_feature_vector, draw_hand
+from hand_utils import create_landmarker, detect, to_feature_vector, draw_hand, draw_label
 from model import GestureNet
 from smoothing import GestureSmoother
 
@@ -18,14 +18,6 @@ model.eval()
 landmarker = create_landmarker()
 cap = cv2.VideoCapture(0)
 smoother = GestureSmoother(window=WINDOW, threshold=THRESHOLD)
-
-def draw_label(frame, text, color):
-    """Text with a dark outline so it's readable over any background."""
-    k = frame.shape[0] / 480                      # scale everything with frame height
-    pos = (int(16 * k), int(52 * k))
-    font = cv2.FONT_HERSHEY_DUPLEX
-    cv2.putText(frame, text, pos, font, 1.4 * k, (0, 0, 0), int(6 * k), cv2.LINE_AA)   # outline
-    cv2.putText(frame, text, pos, font, 1.4 * k, color, int(2 * k), cv2.LINE_AA)       # fill
 
 while True:
     ok, frame = cap.read()

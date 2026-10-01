@@ -57,3 +57,12 @@ def draw_hand(frame, landmarks):
     for p in pts:
         cv2.circle(frame, p, int(6 * k), (40, 40, 40), -1, cv2.LINE_AA)     # dark outline
         cv2.circle(frame, p, int(4 * k), (255, 255, 255), -1, cv2.LINE_AA)  # white joint
+
+
+def draw_label(frame, text, color):
+    """Text with a dark outline so it's readable over any background."""
+    k = frame.shape[0] / 480                      # scale everything with frame height
+    pos = (int(16 * k), int(52 * k))
+    font = cv2.FONT_HERSHEY_DUPLEX
+    cv2.putText(frame, text, pos, font, 1.4 * k, (0, 0, 0), int(6 * k), cv2.LINE_AA)   # outline
+    cv2.putText(frame, text, pos, font, 1.4 * k, color, int(2 * k), cv2.LINE_AA)       # fill
