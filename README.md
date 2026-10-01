@@ -42,7 +42,8 @@ Live, all five gestures classify reliably at normal angles. The main failure cas
 ## Project structure
 
 ```
-hand_utils.py      MediaPipe setup, landmark normalization, skeleton drawing
+hand_utils.py      MediaPipe setup, landmark normalization, skeleton and label drawing
+smoothing.py       GestureSmoother: rolling probability average + confidence threshold
 collect_data.py    webcam data collection → data/gestures.csv
 model.py           GestureNet architecture
 train.py           training + evaluation → models/gesture_model.pt
